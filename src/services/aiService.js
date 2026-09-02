@@ -13,6 +13,8 @@ class AIService {
    */
   static async generateResponse({ prompt, conversationId, persona = 'helpful_assistant', provider }) {
     const selectedProvider = provider || process.env.DEFAULT_AI_PROVIDER || 'built-in';
+    console.log('[AIService] Selected provider:', selectedProvider);
+    console.log('[AIService] Gemini key exists:', !!process.env.GEMINI_API_KEY);
     const context = await ContextService.getContext(conversationId);
     const systemPrompt = ContextService.getPersonaInstructions(persona);
 
@@ -193,7 +195,7 @@ class AIService {
     const isUserNameQuery = /\b(what('s| is) my name|who am i|do you (know|remember) (who i am|my name)|tell me my name)\b/i.test(lower);
     if (isUserNameQuery) {
       if (context && context.length > 0) {
-        const priorUserMsgs = context.filter(m => m.role === 'user' && m.content.trim().toLowerCase() !== lower);
+         = context.filter(m => m.role === 'user' && m.content.trim().toLowerCase() !== lower);
         let foundName = null;
 
         for (const msg of priorUserMsgs) {
@@ -244,7 +246,7 @@ class AIService {
 
     // 4. Time and Date
     if (lower.includes('what time is it') || lower.includes('current time') || lower.includes('today\'s date') || lower.includes('what day is it')) {
-      const now = new Date();
+      consconst priorUserMsgst now = new Date();
       return {
         text: `The current date and time is **${now.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}** at **${now.toLocaleTimeString()}**.`,
         provider: 'Intelligent Built-in NLP'
