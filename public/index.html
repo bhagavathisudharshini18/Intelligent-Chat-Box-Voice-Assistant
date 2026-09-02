@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intelligent Chat Box & Voice Assistant</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="app-body">
+  <div class="app-container d-flex flex-column">
+
+    <!-- Top Navigation Bar -->
+    <header class="navbar navbar-expand border-bottom px-3 py-2 header-bar">
+      <div class="container-fluid d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-sm btn-outline-secondary d-md-none" id="sidebarToggleBtn" aria-label="Toggle Sidebar">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div class="brand-logo d-flex align-items-center gap-2">
+            <div class="logo-icon">
+              <i class="fa-solid fa-robot text-primary"></i>
+            </div>
+            <span class="fw-bold fs-5 brand-text">IntelliVoice<span class="text-primary">.AI</span></span>
+          </div>
+          <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle d-none d-sm-inline-block ms-2" id="personaBadge">
+            <i class="fa-solid fa-brain me-1"></i> Intelligent Assistant
+          </span>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <!-- Voice Listening Status Badge -->
+          <div class="voice-status-badge d-none" id="voiceStatusBadge">
+            <span class="pulse-dot"></span>
+            <span class="status-text text-danger fw-semibold small">Listening...</span>
+          </div>
+
+          <!-- Theme Toggle -->
+          <button class="btn btn-icon btn-outline-secondary" id="themeToggleBtn" title="Toggle Dark/Light Mode">
+            <i class="fa-solid fa-moon" id="themeIcon"></i>
+          </button>
+
+          <!-- Settings Button -->
+          <button class="btn btn-icon btn-outline-secondary" id="settingsBtn" data-bs-toggle="modal" data-bs-target="#settingsModal" title="Assistant & Voice Settings">
+            <i class="fa-solid fa-gear"></i>
+          </button>
+
+          <!-- Feedback Button -->
+          <button class="btn btn-icon btn-outline-secondary" id="feedbackBtn" data-bs-toggle="modal" data-bs-target="#feedbackModal" title="Give Feedback">
+            <i class="fa-regular fa-comment-dots"></i>
+          </button>
+
+          <!-- User Profile / Auth Button -->
+          <div id="authContainer">
+            <button class="btn btn-sm btn-primary rounded-pill px-3" id="loginModalBtn" data-bs-toggle="modal" data-bs-target="#authModal">
+              <i class="fa-solid fa-user me-1"></i> Sign In
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace (Sidebar + Chat Area) -->
+    <div class="d-flex flex-grow-1 overflow-hidden main-content">
+
+      <!-- Left Sidebar: Conversations & History -->
+      <aside class="sidebar border-end d-flex flex-column" id="appSidebar">
+        <div class="p-3 border-bottom d-flex gap-2">
+          <button class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 rounded-3" id="newChatBtn">
+            <i class="fa-solid fa-plus"></i>
+            <span>New Chat</span>
+          </button>
+        </div>
+
+        <!-- Search conversations -->
+        <div class="px-3 pt-2">
+          <div class="input-group input-group-sm">
+            <span class="input-group-text bg-transparent border-end-0 text-muted">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+            <input type="text" class="form-control border-start-0" id="convSearchInput" placeholder="Search conversations...">
+          </div>
+        </div>
+
+        <!-- Conversations List -->
+        <div class="conversations-list flex-grow-1 overflow-y-auto p-2" id="conversationsList">
+          <div class="text-center py-4 text-muted small" id="noConversationsMsg">
+            <i class="fa-regular fa-comments fs-3 mb-2 d-block opacity-50"></i>
+            No previous conversations.
+          </div>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="p-2 border-top sidebar-footer d-flex justify-content-between align-items-center">
+          <span class="text-muted small ps-2" id="userStatusLabel">Guest Session</span>
+          <button class="btn btn-link btn-sm text-danger text-decoration-none p-1" id="clearAllHistoryBtn" title="Clear History">
+            <i class="fa-regular fa-trash-can me-1"></i> Clear
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Chat Container -->
+      <main class="chat-main d-flex flex-column flex-grow-1 position-relative">
+
+        <!-- Chat Header Info -->
+        <div class="chat-header px-4 py-2 border-bottom d-flex justify-content-between align-items-center bg-body-tertiary">
+          <div>
+            <h6 class="mb-0 fw-semibold" id="activeConvTitle">Intelligent Assistant</h6>
+            <small class="text-muted" id="activeConvSubtitle">Multi-turn conversation context active</small>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-sm btn-outline-secondary" id="stopSpeechBtn" style="display: none;" title="Stop Voice Playback">
+              <i class="fa-solid fa-volume-xmark text-danger me-1"></i> Stop Audio
+            </button>
+            <span class="badge bg-secondary-subtle text-secondary" id="aiProviderBadge">Built-in NLP</span>
+          </div>
+        </div>
+
+        <!-- Messages Feed -->
+        <div class="messages-container flex-grow-1 overflow-y-auto p-3 p-md-4" id="messagesContainer">
+          
+          <!-- Welcome Screen (shown when conversation is empty) -->
+          <div class="welcome-screen text-center my-auto py-5" id="welcomeScreen">
+            <div class="assistant-avatar-large mx-auto mb-3">
+              <i class="fa-solid fa-wand-magic-sparkles text-primary fs-1"></i>
+            </div>
+            <h3 class="fw-bold mb-2">How can I assist you today?</h3>
+            <p class="text-muted max-w-md mx-auto mb-4">
+              Type your question, or tap the microphone to speak naturally. I maintain conversation context and provide real-time speech interaction.
+            </p>
+            <div class="row g-2 max-w-lg mx-auto text-start">
+              <div class="col-sm-6">
+                <button class="quick-prompt-card w-100 p-3 rounded-3 border text-start btn" data-prompt="Explain how Speech-to-Text and Text-to-Speech work in this assistant">
+                  <div class="fw-semibold small"><i class="fa-solid fa-microphone me-1 text-primary"></i> Voice Interaction</div>
+                  <div class="text-muted extra-small">How STT & TTS work in this app</div>
+                </button>
+              </div>
+              <div class="col-sm-6">
+                <button class="quick-prompt-card w-100 p-3 rounded-3 border text-start btn" data-prompt="Summarize the project architecture and TRD specifications">
+                  <div class="fw-semibold small"><i class="fa-solid fa-layer-group me-1 text-info"></i> Architecture Overview</div>
+                  <div class="text-muted extra-small">PRD & TRD technical specs</div>
+                </button>
+              </div>
+              <div class="col-sm-6">
+                <button class="quick-prompt-card w-100 p-3 rounded-3 border text-start btn" data-prompt="Write a clean Node.js Express route for handling user registration">
+                  <div class="fw-semibold small"><i class="fa-solid fa-code me-1 text-success"></i> Code Assistant</div>
+                  <div class="text-muted extra-small">Generate clean backend logic</div>
+                </button>
+              </div>
+              <div class="col-sm-6">
+                <button class="quick-prompt-card w-100 p-3 rounded-3 border text-start btn" data-prompt="What time and date is it right now?">
+                  <div class="fw-semibold small"><i class="fa-regular fa-clock me-1 text-warning"></i> Date & Tools</div>
+                  <div class="text-muted extra-small">Real-time calculations & tools</div>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic messages will be appended here -->
+          <div id="messagesList" class="d-flex flex-column gap-3"></div>
+
+          <!-- Typing Indicator -->
+          <div class="typing-indicator-wrapper d-none" id="typingIndicator">
+            <div class="assistant-avatar-sm">
+              <i class="fa-solid fa-robot"></i>
+            </div>
+            <div class="typing-bubble">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audio Wave Visualizer Bar (active during speech/listening) -->
+        <div class="visualizer-container d-none" id="visualizerContainer">
+          <canvas id="audioVisualizerCanvas" height="40"></canvas>
+          <div class="visualizer-label small text-muted text-center" id="visualizerLabel">Listening...</div>
+        </div>
+
+        <!-- Realtime Interim Speech Transcript Banner -->
+        <div class="interim-transcript-banner d-none px-4 py-2 border-top bg-primary-subtle text-primary" id="interimTranscriptBanner">
+          <i class="fa-solid fa-wave-square me-2 fa-fade"></i>
+          <span id="interimTranscriptText" class="fst-italic">Listening...</span>
+        </div>
+
+        <!-- Input Bar Container -->
+        <div class="input-container border-top p-3 bg-body">
+          <form id="chatForm" class="d-flex align-items-end gap-2 max-w-4xl mx-auto position-relative">
+            
+            <!-- Voice Input Button (STT) -->
+            <button type="button" class="btn btn-mic rounded-circle" id="micBtn" title="Speak to Assistant (Voice Input)">
+              <i class="fa-solid fa-microphone" id="micIcon"></i>
+              <span class="mic-wave"></span>
+            </button>
+
+            <!-- Text Input Area -->
+            <div class="input-wrapper flex-grow-1 position-relative">
+              <textarea 
+                class="form-control chat-input" 
+                id="messageInput" 
+                rows="1" 
+                placeholder="Ask me anything or tap the mic to speak..." 
+                maxlength="4000"
+                required
+              ></textarea>
+              <div class="char-count small text-muted" id="charCount">0/4000</div>
+            </div>
+
+            <!-- Send Button -->
+            <button type="submit" class="btn btn-primary btn-send rounded-circle" id="sendBtn" title="Send Message">
+              <i class="fa-solid fa-paper-plane" id="sendIcon"></i>
+            </button>
+          </form>
+          <div class="text-center mt-2">
+            <small class="text-muted extra-small">Press <kbd>Enter</kbd> to send, <kbd>Shift + Enter</kbd> for new line, or tap <kbd>🎙️ Mic</kbd> for voice.</small>
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+    <!-- Modals -->
+
+    <!-- Authentication Modal (Login / Register) -->
+    <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title fw-bold" id="authModalLabel">Sign In</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body pt-2">
+            <ul class="nav nav-pills nav-fill mb-3" id="authTabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#loginTabPane" type="button" role="tab">Log In</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#registerTabPane" type="button" role="tab">Register</button>
+              </li>
+            </ul>
+
+            <div class="tab-content" id="authTabsContent">
+              <!-- Login Form -->
+              <div class="tab-pane fade show active" id="loginTabPane" role="tabpanel">
+                <form id="loginForm">
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Email address</label>
+                    <input type="email" class="form-control" id="loginEmail" placeholder="name@example.com" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Password</label>
+                    <input type="password" class="form-control" id="loginPassword" placeholder="••••••••" required>
+                  </div>
+                  <div class="alert alert-danger d-none py-2 small" id="loginErrorAlert"></div>
+                  <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold" id="loginSubmitBtn">
+                    <span class="btn-text">Sign In</span>
+                  </button>
+                </form>
+              </div>
+
+              <!-- Register Form -->
+              <div class="tab-pane fade" id="registerTabPane" role="tabpanel">
+                <form id="registerForm">
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Full Name</label>
+                    <input type="text" class="form-control" id="regName" placeholder="Your Name" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Email address</label>
+                    <input type="email" class="form-control" id="regEmail" placeholder="name@example.com" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Password (min 6 characters)</label>
+                    <input type="password" class="form-control" id="regPassword" placeholder="••••••••" minlength="6" required>
+                  </div>
+                  <div class="alert alert-danger d-none py-2 small" id="regErrorAlert"></div>
+                  <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold" id="regSubmitBtn">
+                    <span class="btn-text">Create Account</span>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preferences & Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold" id="settingsModalLabel"><i class="fa-solid fa-sliders me-2 text-primary"></i>Assistant Settings</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="preferencesForm">
+              
+              <!-- AI Persona -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold small">Assistant Persona & Tone</label>
+                <select class="form-select" id="prefPersona">
+                  <option value="helpful_assistant">Intelligent Assistant (Balanced & Helpful)</option>
+                  <option value="code_helper">Code Expert (Technical & Snippet Focused)</option>
+                  <option value="tutor">Academic Tutor (Educational & Step-by-Step)</option>
+                  <option value="creative">Creative Writer (Imaginative & Engaging)</option>
+                  <option value="concise">Concise & Direct (Brief & Direct)</option>
+                </select>
+              </div>
+
+              <!-- Voice & Speech (TTS) -->
+              <h6 class="fw-bold mt-4 mb-2 small text-uppercase text-muted">Voice & Audio (TTS)</h6>
+
+              <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="prefAutoSpeak">
+                <label class="form-check-label small" for="prefAutoSpeak">Auto-speak assistant responses aloud</label>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold small">Voice Selection</label>
+                <select class="form-select" id="prefVoiceSelect">
+                  <option value="default">System Default Voice</option>
+                </select>
+              </div>
+
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <label class="form-label fw-semibold small">Speech Rate: <span id="rateVal">1.0x</span></label>
+                  <input type="range" class="form-range" id="prefRate" min="0.5" max="1.8" step="0.1" value="1.0">
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-semibold small">Speech Pitch: <span id="pitchVal">1.0</span></label>
+                  <input type="range" class="form-range" id="prefPitch" min="0.5" max="1.5" step="0.1" value="1.0">
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-end gap-2 mt-4">
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="testVoiceBtn">
+                  <i class="fa-solid fa-play me-1"></i> Test Voice
+                </button>
+                <button type="submit" class="btn btn-sm btn-primary px-3">
+                  Save Preferences
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold" id="feedbackModalLabel"><i class="fa-regular fa-comment-dots me-2 text-primary"></i>Send Feedback</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="feedbackForm">
+              <div class="mb-3">
+                <label class="form-label small fw-semibold">Category</label>
+                <select class="form-select" id="feedbackCategory">
+                  <option value="general">General Feedback</option>
+                  <option value="bug">Report an Issue / Bug</option>
+                  <option value="voice">Voice / STT / TTS Quality</option>
+                  <option value="feature">Feature Request</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label small fw-semibold">Your Message</label>
+                <textarea class="form-control" id="feedbackMessage" rows="4" placeholder="Tell us what you liked or how we can improve..." required></textarea>
+              </div>
+              <div class="alert alert-success d-none py-2 small" id="feedbackSuccessAlert"></div>
+              <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">Submit Feedback</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bootstrap 5 Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Application JS Modules -->
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/preferences.js"></script>
+  <script src="/js/voice.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
