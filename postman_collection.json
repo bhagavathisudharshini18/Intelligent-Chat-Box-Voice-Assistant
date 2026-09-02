@@ -1,0 +1,209 @@
+{
+  "info": {
+    "name": "Intelligent Chat Box & Voice Assistant API",
+    "_postman_id": "c1f7b880-7798-4c12-9c3f-chatbox-voice-assistant",
+    "description": "Postman API Collection for Intelligent Chat Box & Voice Assistant endpoints specified in PRD & TRD.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "System Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/health",
+          "host": ["{{base_url}}"],
+          "path": ["api", "health"]
+        }
+      }
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "POST /api/auth/register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"jane@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/auth/register", "host": ["{{base_url}}"], "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "POST /api/auth/login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jane@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "GET /api/auth/me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": { "raw": "{{base_url}}/api/auth/me", "host": ["{{base_url}}"], "path": ["api", "auth", "me"] }
+          }
+        },
+        {
+          "name": "POST /api/auth/logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": { "raw": "{{base_url}}/api/auth/logout", "host": ["{{base_url}}"], "path": ["api", "auth", "logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chat & AI/NLP",
+      "item": [
+        {
+          "name": "POST /api/chat/message",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Explain how the voice assistant processes Speech-to-Text.\",\n  \"conversationId\": \"new\",\n  \"inputType\": \"text\",\n  \"persona\": \"helpful_assistant\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/chat/message", "host": ["{{base_url}}"], "path": ["api", "chat", "message"] }
+          }
+        },
+        {
+          "name": "GET /api/chat/personas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/chat/personas", "host": ["{{base_url}}"], "path": ["api", "chat", "personas"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Voice (STT / TTS)",
+      "item": [
+        {
+          "name": "POST /api/voice/transcribe",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transcript\": \"Hello assistant, what is the weather today?\",\n  \"durationMs\": 2400,\n  \"confidence\": 0.98\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/voice/transcribe", "host": ["{{base_url}}"], "path": ["api", "voice", "transcribe"] }
+          }
+        },
+        {
+          "name": "POST /api/voice/speak",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Hello! I am speaking your assistant response.\",\n  \"rate\": 1.0,\n  \"pitch\": 1.0\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/voice/speak", "host": ["{{base_url}}"], "path": ["api", "voice", "speak"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Conversations",
+      "item": [
+        {
+          "name": "GET /api/conversations",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": { "raw": "{{base_url}}/api/conversations", "host": ["{{base_url}}"], "path": ["api", "conversations"] }
+          }
+        },
+        {
+          "name": "GET /api/conversations/:id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": { "raw": "{{base_url}}/api/conversations/{{conversation_id}}", "host": ["{{base_url}}"], "path": ["api", "conversations", "{{conversation_id}}"] }
+          }
+        },
+        {
+          "name": "DELETE /api/conversations/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": { "raw": "{{base_url}}/api/conversations/{{conversation_id}}", "host": ["{{base_url}}"], "path": ["api", "conversations", "{{conversation_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Preferences",
+      "item": [
+        {
+          "name": "GET /api/preferences",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": { "raw": "{{base_url}}/api/preferences", "host": ["{{base_url}}"], "path": ["api", "preferences"] }
+          }
+        },
+        {
+          "name": "PUT /api/preferences",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"autoSpeak\": true,\n  \"speechRate\": 1.1,\n  \"aiPersona\": \"code_helper\",\n  \"theme\": \"dark\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/preferences", "host": ["{{base_url}}"], "path": ["api", "preferences"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Feedback",
+      "item": [
+        {
+          "name": "POST /api/feedback",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"general\",\n  \"message\": \"Great assistant application!\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/feedback", "host": ["{{base_url}}"], "path": ["api", "feedback"] }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000" },
+    { "key": "auth_token", "value": "" },
+    { "key": "conversation_id", "value": "" }
+  ]
+}
