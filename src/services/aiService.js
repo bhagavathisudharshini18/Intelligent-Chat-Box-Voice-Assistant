@@ -246,7 +246,7 @@ class AIService {
 
     // 4. Time and Date
     if (lower.includes('what time is it') || lower.includes('current time') || lower.includes('today\'s date') || lower.includes('what day is it')) {
-      consconst priorUserMsgst now = new Date();
+      const now = new Date();
       return {
         text: `The current date and time is **${now.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}** at **${now.toLocaleTimeString()}**.`,
         provider: 'Intelligent Built-in NLP'
