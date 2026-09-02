@@ -195,7 +195,7 @@ class AIService {
     const isUserNameQuery = /\b(what('s| is) my name|who am i|do you (know|remember) (who i am|my name)|tell me my name)\b/i.test(lower);
     if (isUserNameQuery) {
       if (context && context.length > 0) {
-         = context.filter(m => m.role === 'user' && m.content.trim().toLowerCase() !== lower);
+        const priorUserMsgs = context.filter(m => m.role === 'user' && m.content.trim().toLowerCase() !== lower);
         let foundName = null;
 
         for (const msg of priorUserMsgs) {
