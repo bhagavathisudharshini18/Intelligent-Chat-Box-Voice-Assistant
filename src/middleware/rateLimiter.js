@@ -5,6 +5,7 @@ const max = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS, 10) || 100;
 
 const apiLimiter = rateLimit({
   windowMs,
+  trustProxy: 1,
   max,
   standardHeaders: true,
   legacyHeaders: false,
@@ -16,6 +17,7 @@ const apiLimiter = rateLimit({
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
+  trustProxy: 1,
   max: 20,
   standardHeaders: true,
   legacyHeaders: false,
