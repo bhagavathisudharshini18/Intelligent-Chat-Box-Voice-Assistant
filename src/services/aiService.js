@@ -307,6 +307,14 @@ class AIService {
       };
     }
 
+    // 8. Common factual questions
+    if (/capital of france/i.test(lower)) {
+      return {
+        text: 'The capital of France is Paris.',
+        provider: 'Intelligent Built-in NLP'
+      };
+    }
+
     // 8. Default Rich Conversational Response
     const responses = [
       `I understand you are asking about: "${cleaned}". \n\nI have processed your query through the assistant pipeline. To give you the most accurate help: feel free to provide more details or ask a follow-up question, and I will maintain our conversational context!`,
