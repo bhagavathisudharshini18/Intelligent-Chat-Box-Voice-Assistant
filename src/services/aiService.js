@@ -308,12 +308,42 @@ class AIService {
     }
 
     // 8. Common factual questions
-    if (/capital of france/i.test(lower)) {
-      return {
-        text: 'The capital of France is Paris.',
-        provider: 'Intelligent Built-in NLP'
-      };
+    const factualAnswers = [
+      {
+        patterns: [/capital of france/i],
+        answer: 'The capital of France is Paris.'
+      },
+      {
+        patterns: [/capital of india/i],
+        answer: 'The capital of India is New Delhi.'
+      },
+      {
+        patterns: [/capital of japan/i],
+        answer: 'The capital of Japan is Tokyo.'
+      },
+      {
+        patterns: [/capital of china/i],
+        answer: 'The capital of China is Beijing.'
+      },
+      {
+        patterns: [/capital of germany/i],
+        answer: 'The capital of Germany is Berlin.'
+      },
+      {
+        patterns: [/capital of italy/i],
+        answer: 'The capital of Italy is Rome.'
+      }
+    ];
+    
+    for (const item of factualAnswers) {
+      if (item.patterns.some(pattern => pattern.test(lower))) {
+        return {
+          text: item.answer,
+          provider: 'Intelligent Built-in NLP'
+        };
+      }
     }
+    
 
     // 8. Default Rich Conversational Response
     const responses = [
