@@ -332,7 +332,7 @@ class AIService {
           ...headers,
           'Content-Length': Buffer.byteLength(postData)
         },
-        timeout: 10000
+        timeout: 30000
       };
 
       const req = https.request(options, (res) => {
